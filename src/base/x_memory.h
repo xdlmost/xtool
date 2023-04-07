@@ -44,6 +44,10 @@ X_API pt x_realloc(pt mem, u32_t new_size);
  */
 X_API void x_free(pt mem);
 
-
+X_API pt x_memcpy(pt dest, cpt src, u32_t count);
+X_API pt x_memmove(pt dest, cpt src, u32_t count);
+X_API pt x_memset(pt dest, int val, u32_t count);
+X_API pt x_memzero(pt dest, u32_t count);
+X_API int x_memcmp(cpt cmp1, cpt cmp2, u32_t count);
 __X_END_DECLS
 #endif //__X_MEMORY_H

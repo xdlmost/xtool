@@ -15,4 +15,6 @@ build
 # project output
 output
 3rd-party
+3rd-party-src/**
+!3rd-party-src/CMakeLists.txt
 expo
