@@ -19,7 +19,7 @@ __X_BEGIN_DECLS
 
 typedef struct x_array x_array_t;
 
-X_API pt x_create_array(u32_t ele_size, u32_t capacity, x_array_t **new_array);
+X_API i32_t x_create_array(u32_t ele_size, u32_t capacity, x_array_t **new_array);
 X_API i32_t x_array_get_capacity(x_array_t *array, u32_t *capacity);
 X_API i32_t x_array_get_size(x_array_t *array, u32_t *size);
 X_API i32_t x_array_get_element(x_array_t *array, u32_t index, pt *out_ele);

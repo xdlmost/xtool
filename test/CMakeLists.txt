@@ -4,11 +4,11 @@ cmake_minimum_required(VERSION 2.8)
 project(xtool-test)
 
 set(TEST_SRCS "main.cc")
-aux_source_directory(case/base/log TEST_CASE_SRCS)
+aux_source_directory(case/base TEST_CASE_BASE_SRCS)
 set(TEST_EXE_NAME "test")
 
 x_define_compile_macros(IMPORT_API)
-add_executable(${TEST_EXE_NAME} ${TEST_SRCS} ${TEST_CASE_SRCS})
+add_executable(${TEST_EXE_NAME} ${TEST_SRCS} ${TEST_CASE_BASE_SRCS})
 
 # include
 target_include_directories(${TEST_EXE_NAME} PUBLIC "${PROJECT_DIR}/3rd-party/include")
