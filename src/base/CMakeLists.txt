@@ -8,10 +8,13 @@ aux_source_directory(. DIR_XBASE_SRCS)
 add_library(${X_BASE_LIB} SHARED ${DIR_XBASE_SRCS})
 target_include_directories(${X_BASE_LIB} PUBLIC ${X_PROJECT_DIR}/src)
 
+add_library(${X_BASE_LIB}_s STATIC ${DIR_XBASE_SRCS})
+target_include_directories(${X_BASE_LIB}_s PUBLIC ${X_PROJECT_DIR}/src)
+
 # install 
 FILE(GLOB_RECURSE output_h_files CONFIGURE_DEPENDS "*.h" )
 
-install(TARGETS ${X_BASE_LIB}
+install(TARGETS ${X_BASE_LIB} ${X_BASE_LIB}_s
   RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
   ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
