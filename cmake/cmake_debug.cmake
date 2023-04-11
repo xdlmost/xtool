@@ -1,6 +1,6 @@
-function(display_buildin_vars)
-
-  message( STATUS "[!!SHOW] PROJECT_BINARY_DIR=${PROJECT_BINARY_DIR}")
-  message( STATUS "[!!SHOW] PROJECT_SOURCE_DIR=${PROJECT_SOURCE_DIR}")
-  message( STATUS "[!!SHOW] CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}")
+function(x_display_buildin_vars)
+  get_cmake_property(cmake_properties VARIABLES)
+  foreach(cp ${cmake_properties})
+    message( STATUS "[!!SHOW] ${cp}=${${cp}}")
+  endforeach(cp ${cmake_properties})
 endfunction()
