@@ -1,4 +1,4 @@
-#include "base/log.h"
+#include "base/base_api.h"
 #include "gtest/gtest.h"
 
 TEST(base_log, print) {

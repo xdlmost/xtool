@@ -82,13 +82,48 @@ X_API i32_t x_array_get_element_at(x_array_t *array, u32_t index, pt *out_ele);
  * @brief push an element at last 
  * 
  * @param array this array to push
- * @param ele this element to push
+ * @param ele the element to push
  * @return X_ARRAY_OK if no error return 
  */
 X_API i32_t x_array_push_back_element(x_array_t *array, pt ele);
+
+/**
+ * @brief insert an element at index
+ * 
+ * @param array this array to insert
+ * @param index the index to insert
+ * @param ele the element to insert
+ * @return X_ARRAY_OK if no error return  
+ */
 X_API i32_t x_array_insert_element_at(x_array_t *array, u32_t index, pt ele);
+
+/**
+ * @brief pop elememt
+ * 
+ * @param array this array to pop
+ * @param out_ele popped elememt
+ * @return X_ARRAY_OK if no error return  
+ */
 X_API i32_t x_array_pop_back_element(x_array_t *array, pt *out_ele);
+
+/**
+ * @brief remove element
+ * 
+ * @param array this array to remove element at index
+ * @param index index to remove
+ * @param dfun destroy element function if not NULL 
+ * @return X_ARRAY_OK if no error return   
+ */
 X_API i32_t x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun *dfun);
+
+/**
+ * @brief clean all elements
+ * 
+ * @param array this array to clean all elements
+ * @param dfun destroy element function if not NULL 
+ * @return X_ARRAY_OK if no error return   
+ */
+X_API i32_t x_array_clean(x_array_t *array, element_destroy_fun *dfun);
 
 __X_END_DECLS
 #endif //__X_ARRAY_H

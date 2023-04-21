@@ -21,7 +21,7 @@ x_array_create(u32_t ele_size, u32_t capacity, x_array_t **new_array)
   }
 
   if (capacity <= 0) {
-    ret = X_ARRAY_ELEMENT_SIZE_IS_ZERO;
+    ret = X_ARRAY_CAPACITY_IS_ZREO;
     goto error;
   }
 
@@ -69,7 +69,7 @@ x_array_destroy(x_array_t *array)
 {
   i32_t ret = X_ARRAY_OK;
   if (!array) {
-    ret = X_ARRAY_OUT_ARG_IS_NULL;
+    ret = X_ARRAY_IS_NULL;
     goto error;
   }
 
@@ -284,6 +284,32 @@ x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun *df
   }
   
   array->size--;
+  
+error:
+  return ret;
+}
+
+i32_t 
+x_array_clean(x_array_t *array, element_destroy_fun *dfun)
+{
+  i32_t ret = X_ARRAY_OK;
+  unsigned char *p = NULL;
+  i32_t i = 0;
+
+  if (!array) {
+    ret = X_ARRAY_IS_NULL;
+    goto error;
+  }
+
+  p = (unsigned char *)(array->eles_data);
+  for (i = 0; i < array->size; ++i) {
+    if (dfun) {
+      (*dfun)(p);
+    }
+    p += (array->ele_size);
+  }
+  
+  array->size = 0;
   
 error:
   return ret;
