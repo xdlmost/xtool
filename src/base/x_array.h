@@ -19,7 +19,8 @@ typedef i32_t (*element_destroy_fun)(void *mem);
 #define X_ARRAY_IS_FULL 5
 #define X_ARRAY_IS_EMPRY 6
 #define X_ARRAY_OUT_ARG_IS_NULL 7
-#define X_ARRAY_BAD_INDEX 8
+#define X_ARRAY_ELEMENT_IS_NULL 8
+#define X_ARRAY_BAD_INDEX 9
 
 typedef struct x_array x_array_t;
 

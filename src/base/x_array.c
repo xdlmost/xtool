@@ -173,6 +173,11 @@ x_array_push_back_element(x_array_t *array, pt ele)
     goto error;
   }
 
+  if (!ele) {
+    ret = X_ARRAY_ELEMENT_IS_NULL;
+    goto error;
+  }
+
   if (array->size >= array->capacity) {
     ret = X_ARRAY_IS_FULL;
     goto error;
@@ -198,6 +203,11 @@ x_array_insert_element_at(x_array_t *array, u32_t index, pt ele)
     goto error;
   }
 
+  if (!ele) {
+    ret = X_ARRAY_ELEMENT_IS_NULL;
+    goto error;
+  }
+  
   if (array->size >= array->capacity) {
     ret = X_ARRAY_IS_FULL;
     goto error;
@@ -244,10 +254,8 @@ x_array_pop_back_element(x_array_t *array, pt *out_ele)
   }
 
   p = (unsigned char *)(array->eles_data);
-  p += (array->ele_size) * array->size;
+  p += (array->ele_size) * (--array->size);
   (*out_ele) = p;
-
-  array->size--;
   
 error:
   return ret;
