@@ -8,7 +8,7 @@
 #include "predefine.h"
 __X_BEGIN_DECLS
 
-typedef i32_t (*element_destroy_fun)(void *mem);
+typedef i32_t (*element_destroy_fun)(pt_t mem);
 
 // x_array status
 #define X_ARRAY_OK 0
@@ -67,7 +67,7 @@ X_API i32_t x_array_get_size(x_array_t *array, u32_t *size);
  * @param out_eles out array elements pointer
  * @return X_ARRAY_OK if no error return 
  */
-X_API i32_t x_array_get_elements(x_array_t *array, pt *out_eles);
+X_API i32_t x_array_get_elements(x_array_t *array, pt_t *out_eles);
 
 /**
  * @brief get element at index
@@ -77,7 +77,7 @@ X_API i32_t x_array_get_elements(x_array_t *array, pt *out_eles);
  * @param out_ele out element pointer
  * @return X_ARRAY_OK if no error return  
  */
-X_API i32_t x_array_get_element_at(x_array_t *array, u32_t index, pt *out_ele);
+X_API i32_t x_array_get_element_at(x_array_t *array, u32_t index, pt_t *out_ele);
 
 /**
  * @brief push an element at last 
@@ -86,7 +86,7 @@ X_API i32_t x_array_get_element_at(x_array_t *array, u32_t index, pt *out_ele);
  * @param ele the element to push
  * @return X_ARRAY_OK if no error return 
  */
-X_API i32_t x_array_push_back_element(x_array_t *array, pt ele);
+X_API i32_t x_array_push_back_element(x_array_t *array, pt_t ele);
 
 /**
  * @brief insert an element at index
@@ -96,16 +96,16 @@ X_API i32_t x_array_push_back_element(x_array_t *array, pt ele);
  * @param ele the element to insert
  * @return X_ARRAY_OK if no error return  
  */
-X_API i32_t x_array_insert_element_at(x_array_t *array, u32_t index, pt ele);
+X_API i32_t x_array_insert_element_at(x_array_t *array, u32_t index, pt_t ele);
 
 /**
  * @brief pop elememt
  * 
  * @param array this array to pop
- * @param out_ele popped elememt
+ * @param out_ele popped elememt, this elememt should be release by user
  * @return X_ARRAY_OK if no error return  
  */
-X_API i32_t x_array_pop_back_element(x_array_t *array, pt *out_ele);
+X_API i32_t x_array_pop_back_element(x_array_t *array, pt_t *out_ele);
 
 /**
  * @brief remove element
@@ -115,7 +115,7 @@ X_API i32_t x_array_pop_back_element(x_array_t *array, pt *out_ele);
  * @param dfun destroy element function if not NULL 
  * @return X_ARRAY_OK if no error return   
  */
-X_API i32_t x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun *dfun);
+X_API i32_t x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun dfun);
 
 /**
  * @brief clean all elements
@@ -124,7 +124,7 @@ X_API i32_t x_array_remove_element_at(x_array_t *array, u32_t index, element_des
  * @param dfun destroy element function if not NULL 
  * @return X_ARRAY_OK if no error return   
  */
-X_API i32_t x_array_clean(x_array_t *array, element_destroy_fun *dfun);
+X_API i32_t x_array_clean(x_array_t *array, element_destroy_fun dfun);
 
 __X_END_DECLS
 #endif //__X_ARRAY_H

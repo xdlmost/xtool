@@ -70,16 +70,16 @@ typedef unsigned int              u32_t;
 typedef unsigned long long        u64_t;
 typedef long long                 i64_t;
 
-typedef char *                    str;
-typedef const char *              cstr;
+typedef char *                    str_t;
+typedef const char *              cstr_t;
 
 
-typedef void *                    pt;
-typedef const void *              cpt;
+typedef void *                    pt_t;
+typedef const void *              cpt_t;
 
 typedef u32_t                     ret_t;
 typedef uchar_t                   bool_t;
-typedef u64_t                     xtime ;
+typedef u64_t                     xtime_t ;
 
 
 #define X_FALSE                     0

@@ -15,7 +15,7 @@ __X_BEGIN_DECLS
 #define LOG_DEBUG(...) __x_log_(LOG_TYPE_DEBUG, LOG_PERFIX, __VA_ARGS__)
 #define LOG_ERROR(...) __x_log_(LOG_TYPE_ERROR, LOG_PERFIX, __VA_ARGS__)
 
-X_API void __x_log_(char type, cstr func_name, cstr file_name, u32_t line, cstr format, ...);
+X_API void __x_log_(char type, cstr_t func_name, cstr_t file_name, u32_t line, cstr_t format, ...);
 
 __X_END_DECLS
 #endif //__LOG_H

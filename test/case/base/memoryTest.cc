@@ -3,9 +3,9 @@
 
 TEST(base_memory, mallc) {
   i32_t i = 10;
-  str test_str = NULL;
-  str null_str = NULL;
-  test_str = (str)x_malloc(i);
+  str_t test_str = NULL;
+  str_t null_str = NULL;
+  test_str = (str_t)x_malloc(i);
 
   EXPECT_NE(test_str, null_str);
   x_free(test_str);

@@ -123,7 +123,7 @@ error:
 
 
 i32_t 
-x_array_get_elements(x_array_t *array, pt *out_eles)
+x_array_get_elements(x_array_t *array, pt_t *out_eles)
 {
   i32_t ret = X_ARRAY_OK;
   if (!array) {
@@ -141,7 +141,7 @@ error:
 }
 
 i32_t 
-x_array_get_element_at(x_array_t *array, u32_t index, pt *out_ele)
+x_array_get_element_at(x_array_t *array, u32_t index, pt_t *out_ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
@@ -164,7 +164,7 @@ error:
 }
 
 i32_t 
-x_array_push_back_element(x_array_t *array, pt ele)
+x_array_push_back_element(x_array_t *array, pt_t ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
@@ -193,7 +193,7 @@ error:
 }
 
 i32_t 
-x_array_insert_element_at(x_array_t *array, u32_t index, pt ele)
+x_array_insert_element_at(x_array_t *array, u32_t index, pt_t ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
@@ -234,7 +234,7 @@ error:
 }
 
 i32_t 
-x_array_pop_back_element(x_array_t *array, pt *out_ele)
+x_array_pop_back_element(x_array_t *array, pt_t *out_ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
@@ -262,7 +262,7 @@ error:
 }
 
 i32_t 
-x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun *dfun)
+x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun dfun)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
@@ -283,7 +283,10 @@ x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun *df
   p = (unsigned char *)(array->eles_data);
   p += (array->ele_size) * index;
   if (dfun) {
-    (*dfun)(p);
+    ret = dfun(p);
+    if (X_ARRAY_OK != ret) {
+      goto error;
+    }
   }
 
   if (index < array->size-1) {
@@ -298,7 +301,7 @@ error:
 }
 
 i32_t 
-x_array_clean(x_array_t *array, element_destroy_fun *dfun)
+x_array_clean(x_array_t *array, element_destroy_fun dfun)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
@@ -312,7 +315,10 @@ x_array_clean(x_array_t *array, element_destroy_fun *dfun)
   p = (unsigned char *)(array->eles_data);
   for (i = 0; i < array->size; ++i) {
     if (dfun) {
-      (*dfun)(p);
+      ret = dfun(p);
+      if (X_ARRAY_OK != ret) {
+        goto error;
+      }
     }
     p += (array->ele_size);
   }

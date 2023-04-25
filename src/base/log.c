@@ -7,7 +7,7 @@
 #define DEFAULT_LINE_MAX 1024
 
 void 
-__x_log_(char type, cstr func_name, cstr file_name, u32_t line, cstr format, ...)
+__x_log_(char type, cstr_t func_name, cstr_t file_name, u32_t line, cstr_t format, ...)
 {
   va_list	args;
   int written;
