@@ -9,5 +9,6 @@
 #include "base/log.h"
 #include "base/x_memory.h"
 #include "base/x_array.h"
+#include "base/x_net.h"
 
 #endif //__BASE_API_H
