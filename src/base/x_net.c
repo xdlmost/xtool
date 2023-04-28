@@ -2,33 +2,21 @@
 #include "base/x_net.h"
 #include <net/if.h>
 #include <sys/ioctl.h>
-// #include <linux/sockios.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <linux/ipv6.h>
+#include <dirent.h>
 
-i32_t 
-x_net_desroty_interface_info(x_net_interface_info_t* infos, u32_t infos_count)
-{
-  if(infos) {
-    u32_t i = 0;
-    for (i = 0; i < infos_count; ++i) {
-      if (infos[i].name) {
-        x_free(infos[i].name);
-        infos[i].name = NULL;
-      }
+#include "base/log.h"
 
-      if (infos[i].mac_addr) {
-        x_free(infos[i].mac_addr);
-        infos[i].mac_addr = NULL;
-      }
+#include <string.h>
+#include <stdio.h>
 
-      if (infos[i].ipv4_addr) {
-        x_free(infos[i].ipv4_addr);
-        infos[i].ipv4_addr = NULL;
-      }
-    }
-    x_free(infos);
-  }
-  return 0;
-}
+#define IPV6_ADDR_LOOPBACK	        0x0010
+#define IPV6_ADDR_LINKLOCAL	        0x0020
+#define IPV6_ADDR_SITELOCAL	        0x0040
+#define IPV6_ADDR_COMPATv4	        0x0080
+#define IPV6_ADDR_GLOBAL	          0x00f0
 
 i32_t 
 x_net_init()
@@ -41,10 +29,9 @@ x_get_local_net_interface_infos(x_net_interface_info_t **out_infos, u32_t *out_i
 {
   i32_t ret = X_NET_OK;
   int net_device = 0;
-  struct ifconf ifc;
-  str_t ifreq_buff = NULL;
   u32_t ifc_req_counts = 0;
   x_net_interface_info_t *get_infos = NULL;
+
   int i = 0;
 
   // 0- check
@@ -67,67 +54,188 @@ x_get_local_net_interface_infos(x_net_interface_info_t **out_infos, u32_t *out_i
   // Usually, on success zero is returned.  
   // A few ioctl() requests use the return value as an output parameter and return a nonnegative value on success.  
   // On error, -1 is returned, and errno is set to indicate the error.
-  x_memzero(&ifc, sizeof(struct ifconf));
-  if (ioctl(net_device, SIOCGIFCONF, &ifc) <0) {
-    // TODO: get error from errno
-    ret = X_NET_GET_IFCONF_FAIL;
-    goto error;
+  {
+    DIR *d;
+    struct dirent *de;
+    int index = 0;
+    d = opendir("/sys/class/net/");
+    if (d == NULL) {
+      ret = X_NET_GET_IFCONF_FAIL;
+      goto error;
+    }
+
+    while (NULL != (de = readdir(d))) {
+    	if (strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) {
+    		continue;
+    	}
+      ifc_req_counts++;
+    }
+    closedir(d);
+    get_infos = x_calloc(sizeof(x_net_interface_info_t), ifc_req_counts);
+
+    d = opendir("/sys/class/net/");
+    if (d == NULL) {
+      ret = X_NET_GET_IFCONF_FAIL;
+      goto error;
+    }
+
+    while (NULL != (de = readdir(d))) {
+    	if (strcmp(de->d_name, ".") == 0 || strcmp(de->d_name, "..") == 0) {
+    		continue;
+    	}
+      strcpy(get_infos[index++].name, de->d_name);
+    }
+    closedir(d);
   }
 
-  if (0 == ifc.ifc_len){
-    ret = X_NET_NO_IFCONF;
-    goto error;
-  }
-
-  // 3- get net interfaces
-  ifreq_buff = x_calloc(ifc.ifc_len, 1);
-  ifc.ifc_buf = ifreq_buff;
-  if (ioctl(net_device, SIOCGIFCONF, &ifc) <0) {
-    // TODO: get error from errno
-    ret = X_NET_GET_IFCONF_FAIL;
-    goto error;
-  }
-
-  ifc_req_counts = ifc.ifc_len / sizeof(struct ifreq);
-  get_infos = x_calloc(sizeof(x_net_interface_info_t), ifc_req_counts);
-
-  // copy name
+  
   for (i = 0; i < ifc_req_counts; ++i) {
     struct ifreq ifr;
-    size_t name_size = strlen(ifc.ifc_req[i].ifr_name) + 1;
-    get_infos[i].name = x_malloc(name_size);
-    x_memcpy((pt_t)get_infos[i].name, (pt_t)ifc.ifc_req[i].ifr_name, name_size);
+    size_t name_size = 16;
+    short flags = 0;
 
     strcpy(ifr.ifr_name, get_infos[i].name);
 
     // get flags
-    if (ioctl(net_device, SIOCGIFFLAGS, &ifr) <0) {
-      // TODO: get error from errno
-      ret = X_NET_GET_IFCONF_FAIL;
-      goto error;
+    {
+      if (ioctl(net_device, SIOCGIFFLAGS, &ifr) == 0) {
+        flags = ifr.ifr_flags;
+      }
     }
 
-    if (ifr.ifr_flags & IFF_UP) {
-      get_infos[i].is_up = X_TRUE;
-    } else {
-      get_infos[i].is_up = X_FALSE;
+    // get index
+    {
+      if (ioctl(net_device, SIOCGIFINDEX, &ifr) == 0) {
+        get_infos[i].index = ifr.ifr_ifindex;
+      }
+      get_infos[i].index = ifr.ifr_ifindex;
+    }
+
+    // get up
+    {
+      if (ifr.ifr_flags & IFF_UP == IFF_UP) {
+        get_infos[i].is_up = X_TRUE;
+      } else {
+        get_infos[i].is_up = X_FALSE;
+      }
     }
 
     // mac address
-    if (ioctl(net_device, SIOCGIFHWADDR, &ifr) <0) {
-      // TODO: get error from errno
-      ret = X_NET_GET_IFCONF_FAIL;
-      goto error;
+    {
+      if (ioctl(net_device, SIOCGIFHWADDR, &ifr) == 0) {
+        snprintf(get_infos[i].mac, 18, "%02X:%02X:%02X:%02X:%02X:%02X",
+                 (unsigned char)ifr.ifr_hwaddr.sa_data[0],
+                 (unsigned char)ifr.ifr_hwaddr.sa_data[1],
+                 (unsigned char)ifr.ifr_hwaddr.sa_data[2],
+                 (unsigned char)ifr.ifr_hwaddr.sa_data[3],
+                 (unsigned char)ifr.ifr_hwaddr.sa_data[4],
+                 (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
+      }
+
+
     }
 
-    get_infos[i].mac_addr = x_calloc(18,1);
-    snprintf(get_infos[i].mac_addr, 18, "%02X:%02X:%02X:%02X:%02X:%02X",
-             (unsigned char)ifr.ifr_hwaddr.sa_data[0],
-             (unsigned char)ifr.ifr_hwaddr.sa_data[1],
-             (unsigned char)ifr.ifr_hwaddr.sa_data[2],
-             (unsigned char)ifr.ifr_hwaddr.sa_data[3],
-             (unsigned char)ifr.ifr_hwaddr.sa_data[4],
-             (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
+    // ipv4 address
+    {
+      str_t ipaddr_string = NULL;
+      if (ioctl(net_device, SIOCGIFADDR, &ifr)  == 0) {
+        ipaddr_string = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+        strcpy(get_infos[i].ip, ipaddr_string);
+      }
+
+    }
+
+    // broadcast address
+    {
+      str_t ipaddr_string = NULL;
+      if (ioctl(net_device, SIOCGIFBRDADDR, &ifr)  == 0) {
+        ipaddr_string = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_broadaddr)->sin_addr);
+        strcpy(get_infos[i].broadcast, ipaddr_string);
+      }
+
+    }
+
+    // mask address
+    {
+      str_t ipaddr_string = NULL;
+      if (ioctl(net_device, SIOCGIFNETMASK, &ifr)  == 0) {
+        ipaddr_string = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_netmask)->sin_addr);
+        strcpy(get_infos[i].mask, ipaddr_string);
+      }
+
+    }
+
+    // mtu
+    {
+      if (ioctl(net_device, SIOCGIFMTU, &ifr)  == 0) {
+        get_infos[i].mtu = ifr.ifr_mtu;
+      }
+    }
+
+    // ipv6
+    {
+      FILE *f;
+      int index, scope, prefix, flagsv6;
+      char dname[IFNAMSIZ];
+      unsigned char ipv6[16];
+
+      f = fopen("/proc/net/if_inet6", "r");
+      if (f == NULL) {
+          return;
+      }
+
+      while (19 == fscanf(f,
+                          " %2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx%2hhx %*x %x %x %*x %s",
+                          &ipv6[0],
+                          &ipv6[1],
+                          &ipv6[2],
+                          &ipv6[3],
+                          &ipv6[4],
+                          &ipv6[5],
+                          &ipv6[6],
+                          &ipv6[7],
+                          &ipv6[8],
+                          &ipv6[9],
+                          &ipv6[10],
+                          &ipv6[11],
+                          &ipv6[12],
+                          &ipv6[13],
+                          &ipv6[14],
+                          &ipv6[15],
+                          &prefix,
+                          &scope,
+                          dname)) {
+        if (strcmp(get_infos[i].name, dname) != 0) {
+          continue;
+        }
+
+        get_infos[i].ipv6_prefix =prefix;
+        if (inet_ntop(AF_INET6, ipv6, get_infos[i].ipv6, 46) == NULL) {
+          continue;
+        }
+
+        switch (scope) {
+        case IPV6_ADDR_GLOBAL:
+          strcpy(get_infos[i].ipv6_scope, "Global");
+          break;
+        case IPV6_ADDR_LINKLOCAL:
+          strcpy(get_infos[i].ipv6_scope, "Link");
+          break;
+        case IPV6_ADDR_SITELOCAL:
+          strcpy(get_infos[i].ipv6_scope, "Site");
+          break;
+        case IPV6_ADDR_COMPATv4:
+          strcpy(get_infos[i].ipv6_scope, "Compat");
+          break;
+        case IPV6_ADDR_LOOPBACK:
+          strcpy(get_infos[i].ipv6_scope, "Host");
+          break;
+        default:
+          strcpy(get_infos[i].ipv6_scope, "Unknown");
+        }
+      }
+      fclose(f);
+    }
   }
 
 error:
@@ -136,14 +244,14 @@ error:
     *out_infos_count = ifc_req_counts;
   } else {
     if (get_infos) {
-      x_net_desroty_interface_info(get_infos, ifc_req_counts);
+      x_free((pt_t)get_infos);
       get_infos = NULL;
     }
   }
 
-  if (ifreq_buff) {
-    x_free(ifreq_buff);
+  if (net_device) {
+    close(net_device);
+    net_device = 0;
   }
-
   return ret;
 }

@@ -17,14 +17,18 @@ __X_BEGIN_DECLS
 
 typedef struct
 {
-  cstr_t name;
+  char name[16];
+  int index;
   bool_t is_up;
-  cstr_t mac_addr;
-  cstr_t ipv4_addr;
+  char mac[18];
+  char ip[16];
+  char broadcast[16];
+  char mask[16];
+  int mtu;
+  char ipv6[46];
+  int ipv6_prefix;
+  char ipv6_scope[8];
 } x_net_interface_info_t;
-
-X_API i32_t x_net_desroty_interface_info(x_net_interface_info_t* infos, u32_t infos_count);
-
 
 /**
  * @brief 
