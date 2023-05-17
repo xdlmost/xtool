@@ -328,3 +328,40 @@ x_array_clean(x_array_t *array, element_destroy_fun dfun)
 error:
   return ret;
 }
+
+i32_t 
+x_array_iterate(x_array_t *array, x_array_iterate_fun iterate_fun, pt_t arg)
+{
+  i32_t ret = X_ARRAY_OK;
+  unsigned char *p = NULL;
+  u32_t index = 0;
+
+  if (!array) {
+    ret = X_ARRAY_IS_NULL;
+    goto error;
+  }
+
+  if (!iterate_fun) {
+    ret = X_ARRAY_NO_ITERATE_FUN;
+    goto error;
+  }
+
+  if (array->size <= 0) {
+    ret = X_ARRAY_IS_EMPRY;
+    goto error;
+  }
+
+  p = (unsigned char *)(array->eles_data);
+  
+  while(index < array->size ) {
+    if ( X_ARRAY_ITERATE_BREAK == (ret = iterate_fun(array, (pt_t)p, arg))) {
+      goto error;
+    }
+    
+    index++;
+    p += (array->ele_size);
+  }
+  
+error:
+  return ret;
+}

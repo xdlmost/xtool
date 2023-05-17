@@ -753,4 +753,161 @@ TEST(base_array, remove_element_at_random_with_release) {
     array = NULL;
   }
 }
+
+typedef struct iterate_arg
+{
+  i32_t expect;
+  i32_t break_at;
+} iterate_arg_t;
+
+i32_t 
+x_array_iterate_test(x_array_t *array, pt_t element, pt_t arg)
+{
+  iterate_arg_t *iarg = (iterate_arg_t *)arg;
+  arrayElemet_t *ele = *(arrayElemet_t **)element;
+  if (ele->a == iarg->break_at) {
+    return X_ARRAY_ITERATE_BREAK;
+  }
+
+  if (ele->a == iarg->expect) {
+    iarg->expect++;
+  }
+  return X_ARRAY_OK;
+}
+
+TEST(base_array, iter_element) {
+  x_array_t *array = NULL;
+  i32_t ret = X_ARRAY_OK;
+  i32_t i = 0;
+  pt_t NULLPTR = NULL;
+  pt_t out_ele = NULL;
+
+  ret = x_array_create(sizeof(arrayElemet_t*), TEST_ARRAY_ELE_COUNT, &array);
+  EXPECT_EQ(ret, X_ARRAY_OK);
+  EXPECT_NE(array, array_null);
+
+  for (i = 0; i < TEST_ARRAY_ELE_COUNT; i++) {
+    u32_t size = 0;
+    u32_t capacity = 0;
+    arrayElemet_t *ele = (arrayElemet_t *)x_calloc(sizeof(arrayElemet_t), 1);
+    ele->a = i;
+    ele->b = i * i;
+
+    ret = x_array_get_size(array, &size);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(size, i);
+
+    ret = x_array_get_capacity(array, &capacity);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
+
+    ret = x_array_push_back_element(NULL, NULL);
+    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+
+    ret = x_array_push_back_element(array, NULL);
+    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+
+    ret = x_array_push_back_element(array, &ele);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+
+    ret = x_array_get_size(array, &size);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(size, i+1);
+  }
+
+  iterate_arg_t *arg = (iterate_arg_t *)x_malloc(sizeof(iterate_arg_t));
+  arg->expect = 0;
+  arg->break_at = -1;
+
+  ret = x_array_iterate(array, x_array_iterate_test, arg);
+  EXPECT_EQ(ret, X_ARRAY_OK);
+  EXPECT_EQ(arg->expect, TEST_ARRAY_ELE_COUNT);
+
+  {
+    u32_t size = 0;
+    ret = x_array_clean(NULL, arrayElemet_destroy_fun);
+    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+
+    ret = x_array_clean(array, arrayElemet_destroy_fun);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+
+    ret = x_array_get_size(array, &size);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(size, 0);
+  }
+
+  if(array) {
+    ret = x_array_destroy(array);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    array = NULL;
+  }
+}
+
+TEST(base_array, iter_element_break) {
+  x_array_t *array = NULL;
+  i32_t ret = X_ARRAY_OK;
+  i32_t i = 0;
+  pt_t NULLPTR = NULL;
+  pt_t out_ele = NULL;
+
+  ret = x_array_create(sizeof(arrayElemet_t*), TEST_ARRAY_ELE_COUNT, &array);
+  EXPECT_EQ(ret, X_ARRAY_OK);
+  EXPECT_NE(array, array_null);
+
+  for (i = 0; i < TEST_ARRAY_ELE_COUNT; i++) {
+    u32_t size = 0;
+    u32_t capacity = 0;
+    arrayElemet_t *ele = (arrayElemet_t *)x_calloc(sizeof(arrayElemet_t), 1);
+    ele->a = i;
+    ele->b = i * i;
+
+    ret = x_array_get_size(array, &size);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(size, i);
+
+    ret = x_array_get_capacity(array, &capacity);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
+
+    ret = x_array_push_back_element(NULL, NULL);
+    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+
+    ret = x_array_push_back_element(array, NULL);
+    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+
+    ret = x_array_push_back_element(array, &ele);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+
+    ret = x_array_get_size(array, &size);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(size, i+1);
+  }
+
+  iterate_arg_t *arg = (iterate_arg_t *)x_malloc(sizeof(iterate_arg_t));
+  arg->expect = 0;
+  arg->break_at = TEST_ARRAY_ELE_COUNT/2;
+
+  ret = x_array_iterate(array, x_array_iterate_test, arg);
+  EXPECT_EQ(ret, X_ARRAY_ITERATE_BREAK);
+  EXPECT_EQ(arg->expect, arg->break_at);
+
+  {
+    u32_t size = 0;
+    ret = x_array_clean(NULL, arrayElemet_destroy_fun);
+    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+
+    ret = x_array_clean(array, arrayElemet_destroy_fun);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+
+    ret = x_array_get_size(array, &size);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    EXPECT_EQ(size, 0);
+  }
+
+  if(array) {
+    ret = x_array_destroy(array);
+    EXPECT_EQ(ret, X_ARRAY_OK);
+    array = NULL;
+  }
+}
 // i32_t x_array_clean(x_array_t *array, element_destroy_fun *dfun);

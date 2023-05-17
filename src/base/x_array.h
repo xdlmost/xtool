@@ -8,8 +8,6 @@
 #include "predefine.h"
 __X_BEGIN_DECLS
 
-typedef i32_t (*element_destroy_fun)(pt_t mem);
-
 // x_array status
 #define X_ARRAY_OK 0
 #define X_ARRAY_IS_NULL 1
@@ -21,8 +19,13 @@ typedef i32_t (*element_destroy_fun)(pt_t mem);
 #define X_ARRAY_OUT_ARG_IS_NULL 7
 #define X_ARRAY_ELEMENT_IS_NULL 8
 #define X_ARRAY_BAD_INDEX 9
+#define X_ARRAY_NO_ITERATE_FUN 10
+#define X_ARRAY_ITERATE_BREAK 11
 
 typedef struct x_array x_array_t;
+
+typedef i32_t (*element_destroy_fun)(pt_t mem);
+typedef i32_t (*x_array_iterate_fun)(x_array_t *array, pt_t element, pt_t arg);
 
 /**
  * @brief create an array with element size and capacity
@@ -125,6 +128,9 @@ X_API i32_t x_array_remove_element_at(x_array_t *array, u32_t index, element_des
  * @return X_ARRAY_OK if no error return   
  */
 X_API i32_t x_array_clean(x_array_t *array, element_destroy_fun dfun);
+
+
+X_API i32_t x_array_iterate(x_array_t *array, x_array_iterate_fun iterate_fun, pt_t arg);
 
 __X_END_DECLS
 #endif //__X_ARRAY_H
