@@ -35,15 +35,15 @@ TEST(base_array, create_and_destory) {
   x_array_t *array = NULL;
   i32_t ret = X_ARRAY_OK;
   ret = x_array_create(0, TEST_ARRAY_ELE_COUNT, &array);
-  EXPECT_EQ(ret, X_ARRAY_ELEMENT_SIZE_IS_ZERO);
+  EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
   EXPECT_EQ(array, array_null);
 
   ret = x_array_create(sizeof(arrayElemet_t), 0, &array);
-  EXPECT_EQ(ret, X_ARRAY_CAPACITY_IS_ZREO);
+  EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
   EXPECT_EQ(array, array_null);
 
   ret = x_array_create(sizeof(arrayElemet_t), TEST_ARRAY_ELE_COUNT, NULL);
-  EXPECT_EQ(ret, X_ARRAY_OUT_ARG_IS_NULL);
+  EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
   EXPECT_EQ(array, array_null);
 
   ret = x_array_create(sizeof(arrayElemet_t), TEST_ARRAY_ELE_COUNT, &array);
@@ -52,7 +52,7 @@ TEST(base_array, create_and_destory) {
 
   if(array) {
     ret = x_array_destroy(NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_destroy(array);
     EXPECT_EQ(ret, X_ARRAY_OK);
@@ -69,14 +69,8 @@ TEST(base_array, get_capacity) {
   EXPECT_EQ(ret, X_ARRAY_OK);
   EXPECT_NE(array, array_null);
 
-  ret = x_array_get_capacity(NULL, NULL);
-  EXPECT_EQ(ret, X_ARRAY_IS_NULL);
 
-  ret = x_array_get_capacity(array, NULL);
-  EXPECT_EQ(ret, X_ARRAY_OUT_ARG_IS_NULL);
-
-  ret = x_array_get_capacity(array, &capacity);
-  EXPECT_EQ(ret, X_ARRAY_OK);
+  capacity = x_array_get_capacity(array);
   EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
   if(array) {
@@ -95,14 +89,7 @@ TEST(base_array, get_size) {
   EXPECT_EQ(ret, X_ARRAY_OK);
   EXPECT_NE(array, array_null);
 
-  ret = x_array_get_size(NULL, NULL);
-  EXPECT_EQ(ret, X_ARRAY_IS_NULL);
-
-  ret = x_array_get_size(array, NULL);
-  EXPECT_EQ(ret, X_ARRAY_OUT_ARG_IS_NULL);
-
-  ret = x_array_get_size(array, &size);
-  EXPECT_EQ(ret, X_ARRAY_OK);
+  size = x_array_get_size(array);
   EXPECT_EQ(size, 0);
 
   if(array) {
@@ -123,10 +110,10 @@ TEST(base_array, get_elements) {
   EXPECT_NE(array, array_null);
 
   ret = x_array_get_elements(NULL, NULL);
-  EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+  EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
   ret = x_array_get_elements(array, NULL);
-  EXPECT_EQ(ret, X_ARRAY_OUT_ARG_IS_NULL);
+  EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
   ret = x_array_get_elements(array, &out_eles);
   EXPECT_EQ(ret, X_ARRAY_OK);
@@ -157,25 +144,22 @@ TEST(base_array, push_back_element) {
     ele.a = i;
     ele.b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_push_back_element(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -222,25 +206,22 @@ TEST(base_array, get_element_at) {
     ele.a = i;
     ele.b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_push_back_element(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -289,28 +270,25 @@ TEST(base_array, insert_element_at_0) {
     ele.a = i;
     ele.b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_insert_element_at(NULL, TEST_ARRAY_ELE_COUNT+100, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_insert_element_at(array, TEST_ARRAY_ELE_COUNT+100, &ele);
     EXPECT_EQ(ret, X_ARRAY_BAD_INDEX);
 
     ret = x_array_insert_element_at(array, 0, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_insert_element_at(array, 0, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -357,28 +335,25 @@ TEST(base_array, insert_element_at_last) {
     ele.a = i;
     ele.b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_insert_element_at(NULL, TEST_ARRAY_ELE_COUNT+100, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_insert_element_at(array, TEST_ARRAY_ELE_COUNT+100, &ele);
     EXPECT_EQ(ret, X_ARRAY_BAD_INDEX);
 
     ret = x_array_insert_element_at(array, i, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_insert_element_at(array, i, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -432,22 +407,20 @@ TEST(base_array, insert_element_at_random) {
     ele.a = i;
     ele.b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_insert_element_at(NULL, TEST_ARRAY_ELE_COUNT+100, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_insert_element_at(array, TEST_ARRAY_ELE_COUNT+100, &ele);
     EXPECT_EQ(ret, X_ARRAY_BAD_INDEX);
 
     ret = x_array_insert_element_at(array, i, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     do{
       u32_t index = ((u32_t)rand()%(TEST_ARRAY_ELE_COUNT*2 +100));
@@ -460,8 +433,7 @@ TEST(base_array, insert_element_at_random) {
 
     } while (X_ARRAY_OK != ret);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -511,33 +483,29 @@ TEST(base_array, pop_back_element) {
     ele.a = i;
     ele.b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_push_back_element(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
   for (i = 0; i < TEST_ARRAY_ELE_COUNT; i++) {
     u32_t size = 0;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, TEST_ARRAY_ELE_COUNT-i);
 
     ret = x_array_pop_back_element(array, &out_ele);
@@ -545,8 +513,7 @@ TEST(base_array, pop_back_element) {
     EXPECT_NE(out_ele, NULLPTR);
 
     arrayElemet_t *poped_ele = (arrayElemet_t *)out_ele;
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, TEST_ARRAY_ELE_COUNT-i-1);
 
     EXPECT_EQ(ret, X_ARRAY_OK);
@@ -582,7 +549,7 @@ TEST(base_array, remove_element_at_random) {
   EXPECT_NE(array, array_null);
 
   ret = x_array_remove_element_at(NULL, TEST_ARRAY_ELE_COUNT, NULL);
-  EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+  EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
   ret = x_array_remove_element_at(array, TEST_ARRAY_ELE_COUNT, NULL);
   EXPECT_EQ(ret, X_ARRAY_IS_EMPRY);
@@ -594,33 +561,29 @@ TEST(base_array, remove_element_at_random) {
     ele.a = i;
     ele.b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_push_back_element(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
   for (i = 0; i < TEST_ARRAY_ELE_COUNT*100+100; i++) {
     u32_t size = 0;
     u32_t index = ((u32_t)rand()%(TEST_ARRAY_ELE_COUNT*2 +100));
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
 
     ret = x_array_remove_element_at(array, index, NULL);
     if(size == 0) {
@@ -630,8 +593,7 @@ TEST(base_array, remove_element_at_random) {
         u32_t size2 = 0;
         EXPECT_EQ(ret, X_ARRAY_OK);
 
-        ret = x_array_get_size(array, &size2);
-        EXPECT_EQ(ret, X_ARRAY_OK);
+        size2 = x_array_get_size(array);
         EXPECT_EQ(size2, size-1);
       } else {
         EXPECT_EQ(ret, X_ARRAY_BAD_INDEX);
@@ -642,13 +604,12 @@ TEST(base_array, remove_element_at_random) {
   {
     u32_t size = 0;
     ret = x_array_clean(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_clean(array, NULL);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, 0);
   }
 
@@ -671,7 +632,7 @@ TEST(base_array, remove_element_at_random_with_release) {
   EXPECT_NE(array, array_null);
 
   ret = x_array_remove_element_at(NULL, TEST_ARRAY_ELE_COUNT, NULL);
-  EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+  EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
   ret = x_array_remove_element_at(array, TEST_ARRAY_ELE_COUNT, NULL);
   EXPECT_EQ(ret, X_ARRAY_IS_EMPRY);
@@ -683,25 +644,22 @@ TEST(base_array, remove_element_at_random_with_release) {
     ele->a = i;
     ele->b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_push_back_element(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -714,8 +672,7 @@ TEST(base_array, remove_element_at_random_with_release) {
   for (i = 0; i < TEST_ARRAY_ELE_COUNT*100+100; i++) {
     u32_t size = 0;
     u32_t index = ((u32_t)rand()%(TEST_ARRAY_ELE_COUNT*2 +100));
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
 
     ret = x_array_remove_element_at(array, index, arrayElemet_destroy_fun);
     if(size == 0) {
@@ -725,8 +682,7 @@ TEST(base_array, remove_element_at_random_with_release) {
         u32_t size2 = 0;
         EXPECT_EQ(ret, X_ARRAY_OK);
 
-        ret = x_array_get_size(array, &size2);
-        EXPECT_EQ(ret, X_ARRAY_OK);
+        size2 = x_array_get_size(array);
         EXPECT_EQ(size2, size-1);
       } else {
         EXPECT_EQ(ret, X_ARRAY_BAD_INDEX);
@@ -737,13 +693,12 @@ TEST(base_array, remove_element_at_random_with_release) {
   {
     u32_t size = 0;
     ret = x_array_clean(NULL, arrayElemet_destroy_fun);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_clean(array, arrayElemet_destroy_fun);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, 0);
   }
 
@@ -793,25 +748,22 @@ TEST(base_array, iter_element) {
     ele->a = i;
     ele->b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_push_back_element(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -826,13 +778,12 @@ TEST(base_array, iter_element) {
   {
     u32_t size = 0;
     ret = x_array_clean(NULL, arrayElemet_destroy_fun);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_clean(array, arrayElemet_destroy_fun);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, 0);
   }
 
@@ -861,25 +812,22 @@ TEST(base_array, iter_element_break) {
     ele->a = i;
     ele->b = i * i;
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i);
 
-    ret = x_array_get_capacity(array, &capacity);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    capacity = x_array_get_capacity(array);
     EXPECT_EQ(capacity, TEST_ARRAY_ELE_COUNT);
 
     ret = x_array_push_back_element(NULL, NULL);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, NULL);
-    EXPECT_EQ(ret, X_ARRAY_ELEMENT_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_push_back_element(array, &ele);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, i+1);
   }
 
@@ -894,13 +842,12 @@ TEST(base_array, iter_element_break) {
   {
     u32_t size = 0;
     ret = x_array_clean(NULL, arrayElemet_destroy_fun);
-    EXPECT_EQ(ret, X_ARRAY_IS_NULL);
+    EXPECT_EQ(ret, X_ARRAY_BAD_ARGUMENT);
 
     ret = x_array_clean(array, arrayElemet_destroy_fun);
     EXPECT_EQ(ret, X_ARRAY_OK);
 
-    ret = x_array_get_size(array, &size);
-    EXPECT_EQ(ret, X_ARRAY_OK);
+    size = x_array_get_size(array);
     EXPECT_EQ(size, 0);
   }
 

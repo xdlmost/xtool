@@ -17,7 +17,7 @@ __X_BEGIN_DECLS
  * @param ele_size element size by byte
  * @return pt_t out memory pointer 
  */
-X_API pt_t x_malloc(u32_t ele_size);
+X_API(pt_t) x_malloc(u32_t ele_size);
 
 /**
  * @brief this will allocate new memory with zero-set data
@@ -26,7 +26,7 @@ X_API pt_t x_malloc(u32_t ele_size);
  * @param ele_count element count
  * @return pt_t out memory pointer 
  */
-X_API pt_t x_calloc(u32_t ele_size, u32_t ele_count);
+X_API(pt_t) x_calloc(u32_t ele_size, u32_t ele_count);
 
 /**
  * @brief this will re-allocate new memory with old data and random data(initialized data)
@@ -35,7 +35,7 @@ X_API pt_t x_calloc(u32_t ele_size, u32_t ele_count);
  * @param new_size new size by byte
  * @return pt_t out memory pointer 
  */
-X_API pt_t x_realloc(pt_t mem, u32_t new_size);
+X_API(pt_t) x_realloc(pt_t mem, u32_t new_size);
 
 /**
  * @brief free memory pointer created by x_malloc\x_calloc\x_realloc
@@ -43,7 +43,7 @@ X_API pt_t x_realloc(pt_t mem, u32_t new_size);
  * @param mem memory pointer to free
  * @return void
  */
-X_API void x_free(pt_t mem);
+X_API(void) x_free(pt_t mem);
 
 /**
  * @brief copy memory from source to destination with count
@@ -53,7 +53,7 @@ X_API void x_free(pt_t mem);
  * @param count copy count
  * @return pt_t out memory pointer 
  */
-X_API pt_t x_memcpy(pt_t dest, cpt_t src, u32_t count);
+X_API(pt_t) x_memcpy(pt_t dest, cpt_t src, u32_t count);
 
 /**
  * @brief copy memory from source to destination with count, it works when source and destination have some overlap
@@ -63,7 +63,7 @@ X_API pt_t x_memcpy(pt_t dest, cpt_t src, u32_t count);
  * @param count copy count
  * @return pt_t out memory pointer  
  */
-X_API pt_t x_memmove(pt_t dest, cpt_t src, u32_t count);
+X_API(pt_t) x_memmove(pt_t dest, cpt_t src, u32_t count);
 
 /**
  * @brief set destination with repeated value fill to count
@@ -73,7 +73,7 @@ X_API pt_t x_memmove(pt_t dest, cpt_t src, u32_t count);
  * @param count set count 
  * @return pt_t out memory pointer   
  */
-X_API pt_t x_memset(pt_t dest, int val, u32_t count);
+X_API(pt_t) x_memset(pt_t dest, int val, u32_t count);
 
 /**
  * @brief set destination with zero fill to count
@@ -82,7 +82,7 @@ X_API pt_t x_memset(pt_t dest, int val, u32_t count);
  * @param count set count 
  * @return pt_t out memory pointer   
  */
-X_API pt_t x_memzero(pt_t dest, u32_t count);
+X_API(pt_t) x_memzero(pt_t dest, u32_t count);
 
 /**
  * @brief compare cmp1 and cmp2 with count, if cmp1 and cmp2 are the same by bytes within count return 0
@@ -92,6 +92,6 @@ X_API pt_t x_memzero(pt_t dest, u32_t count);
  * @param count compare count
  * @return if cmp1 and cmp2 are the same by bytes within count return 0 
  */
-X_API int x_memcmp(cpt_t cmp1, cpt_t cmp2, u32_t count);
+X_API(int) x_memcmp(cpt_t cmp1, cpt_t cmp2, u32_t count);
 __X_END_DECLS
 #endif //__X_MEMORY_H

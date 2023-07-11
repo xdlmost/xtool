@@ -15,18 +15,8 @@ x_array_create(u32_t ele_size, u32_t capacity, x_array_t **new_array)
   i32_t ret = X_ARRAY_OK;
   x_array_t *array = NULL;
   void *eles_data = NULL;
-  if (ele_size <= 0) {
-    ret = X_ARRAY_ELEMENT_SIZE_IS_ZERO;
-    goto error;
-  }
-
-  if (capacity <= 0) {
-    ret = X_ARRAY_CAPACITY_IS_ZREO;
-    goto error;
-  }
-
-  if (!new_array) {
-    ret = X_ARRAY_OUT_ARG_IS_NULL;
+  if (ele_size <= 0 || capacity <= 0 || !new_array) {
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -69,7 +59,7 @@ x_array_destroy(x_array_t *array)
 {
   i32_t ret = X_ARRAY_OK;
   if (!array) {
-    ret = X_ARRAY_IS_NULL;
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -85,40 +75,16 @@ error:
   return ret;
 }
 
-i32_t 
-x_array_get_capacity(x_array_t *array, u32_t *capacity)
+u32_t 
+x_array_get_capacity(x_array_t *array)
 {
-  i32_t ret = X_ARRAY_OK;
-  if (!array) {
-    ret = X_ARRAY_IS_NULL;
-    goto error;
-  }
-  if (!capacity) {
-    ret = X_ARRAY_OUT_ARG_IS_NULL;
-    goto error;
-  }
-
-  (*capacity) = array->capacity;
-error:
-  return ret;
+  return array->capacity;
 }
 
-i32_t 
-x_array_get_size(x_array_t *array, u32_t *size)
+u32_t 
+x_array_get_size(x_array_t *array)
 {
-  i32_t ret = X_ARRAY_OK;
-  if (!array) {
-    ret = X_ARRAY_IS_NULL;
-    goto error;
-  }
-  if (!size) {
-    ret = X_ARRAY_OUT_ARG_IS_NULL;
-    goto error;
-  }
-
-  (*size) = array->size;
-error:
-  return ret;
+  return array->size;
 }
 
 
@@ -126,12 +92,8 @@ i32_t
 x_array_get_elements(x_array_t *array, pt_t *out_eles)
 {
   i32_t ret = X_ARRAY_OK;
-  if (!array) {
-    ret = X_ARRAY_IS_NULL;
-    goto error;
-  }
-  if (!out_eles) {
-    ret = X_ARRAY_OUT_ARG_IS_NULL;
+  if (!array || !out_eles) {
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -145,8 +107,8 @@ x_array_get_element_at(x_array_t *array, u32_t index, pt_t *out_ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
-  if (!array) {
-    ret = X_ARRAY_IS_NULL;
+  if (!array || !out_ele) {
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -168,13 +130,9 @@ x_array_push_back_element(x_array_t *array, pt_t ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
-  if (!array) {
-    ret = X_ARRAY_IS_NULL;
-    goto error;
-  }
 
-  if (!ele) {
-    ret = X_ARRAY_ELEMENT_IS_NULL;
+  if (!array || !ele) {
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -197,14 +155,9 @@ x_array_insert_element_at(x_array_t *array, u32_t index, pt_t ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
-  if (!array)
+  if (!array || !ele)
   {
-    ret = X_ARRAY_IS_NULL;
-    goto error;
-  }
-
-  if (!ele) {
-    ret = X_ARRAY_ELEMENT_IS_NULL;
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
   
@@ -238,13 +191,8 @@ x_array_pop_back_element(x_array_t *array, pt_t *out_ele)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
-  if (!array) {
-    ret = X_ARRAY_IS_NULL;
-    goto error;
-  }
-
-  if (!out_ele) {
-    ret = X_ARRAY_OUT_ARG_IS_NULL;
+  if (!array || !out_ele) {
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -267,7 +215,7 @@ x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun dfu
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
   if (!array) {
-    ret = X_ARRAY_IS_NULL;
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -308,7 +256,7 @@ x_array_clean(x_array_t *array, element_destroy_fun dfun)
   i32_t i = 0;
 
   if (!array) {
-    ret = X_ARRAY_IS_NULL;
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 
@@ -330,19 +278,40 @@ error:
 }
 
 i32_t 
+x_array_exchange(x_array_t *array, u32_t aindex, u32_t bindex, pt_t exchange_buffer)
+{
+  i32_t ret = X_ARRAY_OK;
+
+  if (!array || aindex == bindex || aindex >= array->size || bindex >= array->size) {
+    ret = X_ARRAY_BAD_ARGUMENT;
+    goto error;
+  }
+
+  if (exchange_buffer) {
+    x_memcpy(exchange_buffer, ((unsigned char *)(array->eles_data)) + aindex * array->ele_size, array->ele_size);
+    x_memcpy(((unsigned char *)(array->eles_data)) + aindex * array->ele_size, ((unsigned char *)(array->eles_data)) + bindex * array->ele_size,array->ele_size);
+    x_memcpy(((unsigned char *)(array->eles_data)) + bindex * array->ele_size, array->ele_size, exchange_buffer);
+  } else {
+    unsigned char *buffer = (unsigned char *)x_malloc(array->ele_size);
+    x_memcpy(buffer, ((unsigned char *)(array->eles_data)) + aindex * array->ele_size, array->ele_size);
+    x_memcpy(((unsigned char *)(array->eles_data)) + aindex * array->ele_size, ((unsigned char *)(array->eles_data)) + bindex * array->ele_size,array->ele_size);
+    x_memcpy(((unsigned char *)(array->eles_data)) + bindex * array->ele_size, array->ele_size, buffer);
+    x_free(buffer);
+  }
+
+error:
+  return ret;
+}
+
+i32_t 
 x_array_iterate(x_array_t *array, x_array_iterate_fun iterate_fun, pt_t arg)
 {
   i32_t ret = X_ARRAY_OK;
   unsigned char *p = NULL;
   u32_t index = 0;
 
-  if (!array) {
-    ret = X_ARRAY_IS_NULL;
-    goto error;
-  }
-
-  if (!iterate_fun) {
-    ret = X_ARRAY_NO_ITERATE_FUN;
+  if (!array || !iterate_fun) {
+    ret = X_ARRAY_BAD_ARGUMENT;
     goto error;
   }
 

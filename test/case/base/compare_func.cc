@@ -11,13 +11,13 @@ TEST(base_compare_func, i32_t_compare) {
     v2 = (i32_t)rand();
     if (v1 > v2) {
       EXPECT_EQ(1, x_compare_func_i32(v1, v2));
-      EXPECT_EQ(1, x_compare_func_i32_ptr(&v1, &v2, NULL));
+      EXPECT_EQ(1, x_compare_func_i32_ptr(&v1, &v2));
     } else if (v1 < v2) {
       EXPECT_EQ(-1, x_compare_func_i32(v1, v2));
-      EXPECT_EQ(-1, x_compare_func_i32_ptr(&v1, &v2, NULL));
+      EXPECT_EQ(-1, x_compare_func_i32_ptr(&v1, &v2));
     } else{
       EXPECT_EQ(0, x_compare_func_i32(v1, v2));
-      EXPECT_EQ(0, x_compare_func_i32_ptr(&v1, &v2, NULL));
+      EXPECT_EQ(0, x_compare_func_i32_ptr(&v1, &v2));
     }
   }
 }

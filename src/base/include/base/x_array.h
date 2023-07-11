@@ -10,17 +10,12 @@ __X_BEGIN_DECLS
 
 // x_array status
 #define X_ARRAY_OK 0
-#define X_ARRAY_IS_NULL 1
-#define X_ARRAY_MEMORY_ERROR 2
-#define X_ARRAY_ELEMENT_SIZE_IS_ZERO 3
-#define X_ARRAY_CAPACITY_IS_ZREO 4
-#define X_ARRAY_IS_FULL 5
-#define X_ARRAY_IS_EMPRY 6
-#define X_ARRAY_OUT_ARG_IS_NULL 7
-#define X_ARRAY_ELEMENT_IS_NULL 8
-#define X_ARRAY_BAD_INDEX 9
-#define X_ARRAY_NO_ITERATE_FUN 10
-#define X_ARRAY_ITERATE_BREAK 11
+#define X_ARRAY_MEMORY_ERROR 1
+#define X_ARRAY_BAD_ARGUMENT 2
+#define X_ARRAY_IS_FULL 3
+#define X_ARRAY_IS_EMPRY 4
+#define X_ARRAY_BAD_INDEX 5
+#define X_ARRAY_ITERATE_BREAK 6
 
 typedef struct x_array x_array_t;
 
@@ -35,7 +30,7 @@ typedef i32_t (*x_array_iterate_fun)(x_array_t *array, pt_t element, pt_t arg);
  * @param new_array out new array
  * @return X_ARRAY_OK if no error return
  */
-X_API i32_t x_array_create(u32_t ele_size, u32_t capacity, x_array_t **new_array);
+X_API(i32_t) x_array_create(u32_t ele_size, u32_t capacity, x_array_t **new_array);
 
 /**
  * @brief destroy an array
@@ -43,25 +38,23 @@ X_API i32_t x_array_create(u32_t ele_size, u32_t capacity, x_array_t **new_array
  * @param array array to destroy
  * @return X_ARRAY_OK if no error return
  */
-X_API i32_t x_array_destroy(x_array_t *array);
+X_API(i32_t) x_array_destroy(x_array_t *array);
 
 /**
  * @brief get the capacity of the array
  * 
  * @param array the array to get capacity
- * @param capacity out capacity
- * @return X_ARRAY_OK if no error return 
+ * @return capacity
  */
-X_API i32_t x_array_get_capacity(x_array_t *array, u32_t *capacity);
+X_API(u32_t) x_array_get_capacity(x_array_t *array);
 
 /**
  * @brief get the size of the array
  * 
  * @param array the array to get size
- * @param size out array size
- * @return X_ARRAY_OK if no error return 
+ * @return size
  */
-X_API i32_t x_array_get_size(x_array_t *array, u32_t *size);
+X_API(u32_t) x_array_get_size(x_array_t *array);
 
 /**
  * @brief get the elements pointer of the array
@@ -70,7 +63,7 @@ X_API i32_t x_array_get_size(x_array_t *array, u32_t *size);
  * @param out_eles out array elements pointer
  * @return X_ARRAY_OK if no error return 
  */
-X_API i32_t x_array_get_elements(x_array_t *array, pt_t *out_eles);
+X_API(i32_t) x_array_get_elements(x_array_t *array, pt_t *out_eles);
 
 /**
  * @brief get element at index
@@ -80,7 +73,7 @@ X_API i32_t x_array_get_elements(x_array_t *array, pt_t *out_eles);
  * @param out_ele out element pointer
  * @return X_ARRAY_OK if no error return  
  */
-X_API i32_t x_array_get_element_at(x_array_t *array, u32_t index, pt_t *out_ele);
+X_API(i32_t) x_array_get_element_at(x_array_t *array, u32_t index, pt_t *out_ele);
 
 /**
  * @brief push an element at last 
@@ -89,7 +82,7 @@ X_API i32_t x_array_get_element_at(x_array_t *array, u32_t index, pt_t *out_ele)
  * @param ele the element to push
  * @return X_ARRAY_OK if no error return 
  */
-X_API i32_t x_array_push_back_element(x_array_t *array, pt_t ele);
+X_API(i32_t) x_array_push_back_element(x_array_t *array, pt_t ele);
 
 /**
  * @brief insert an element at index
@@ -99,7 +92,7 @@ X_API i32_t x_array_push_back_element(x_array_t *array, pt_t ele);
  * @param ele the element to insert
  * @return X_ARRAY_OK if no error return  
  */
-X_API i32_t x_array_insert_element_at(x_array_t *array, u32_t index, pt_t ele);
+X_API(i32_t) x_array_insert_element_at(x_array_t *array, u32_t index, pt_t ele);
 
 /**
  * @brief pop elememt
@@ -108,7 +101,7 @@ X_API i32_t x_array_insert_element_at(x_array_t *array, u32_t index, pt_t ele);
  * @param out_ele popped elememt, this elememt should be release by user
  * @return X_ARRAY_OK if no error return  
  */
-X_API i32_t x_array_pop_back_element(x_array_t *array, pt_t *out_ele);
+X_API(i32_t) x_array_pop_back_element(x_array_t *array, pt_t *out_ele);
 
 /**
  * @brief remove element
@@ -118,7 +111,7 @@ X_API i32_t x_array_pop_back_element(x_array_t *array, pt_t *out_ele);
  * @param dfun destroy element function if not NULL 
  * @return X_ARRAY_OK if no error return   
  */
-X_API i32_t x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun dfun);
+X_API(i32_t) x_array_remove_element_at(x_array_t *array, u32_t index, element_destroy_fun dfun);
 
 /**
  * @brief clean all elements
@@ -127,10 +120,11 @@ X_API i32_t x_array_remove_element_at(x_array_t *array, u32_t index, element_des
  * @param dfun destroy element function if not NULL 
  * @return X_ARRAY_OK if no error return   
  */
-X_API i32_t x_array_clean(x_array_t *array, element_destroy_fun dfun);
+X_API(i32_t) x_array_clean(x_array_t *array, element_destroy_fun dfun);
 
+X_API(i32_t) x_array_exchange(x_array_t *array, u32_t aindex, u32_t bindex, pt_t exchange_buffer);
 
-X_API i32_t x_array_iterate(x_array_t *array, x_array_iterate_fun iterate_fun, pt_t arg);
+X_API(i32_t) x_array_iterate(x_array_t *array, x_array_iterate_fun iterate_fun, pt_t arg);
 
 __X_END_DECLS
 #endif //__X_ARRAY_H

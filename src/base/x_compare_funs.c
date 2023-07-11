@@ -1,7 +1,7 @@
 #include "base/x_compare_funs.h"
 
 inline i32_t 
-x_compare_func_i32_ptr(cpt_t value1, cpt_t value2, pt_t arg)
+x_compare_func_i32_ptr(cpt_t value1, cpt_t value2)
 {
   i32_t valuei32_t1 = *(i32_t *)value1;
   i32_t valuei32_t2 = *(i32_t *)value2;
@@ -16,6 +16,5 @@ x_compare_func_i32(i32_t value1, i32_t value2)
   } else if (value1 < value2) {
     return -1;
   }
-
   return 0;
 }

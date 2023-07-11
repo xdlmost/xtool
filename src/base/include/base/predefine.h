@@ -17,22 +17,22 @@
 #endif
 
 #ifdef __PLATFORM_OS_WINDOWS
-  #define HELPER_IMPORT __declspec(dllimport)
-  #define HELPER_EXPORT __declspec(dllexport)
-  #define HELPER_LOCAL
+  #define HELPER_IMPORT(type) __declspec(dllimport) type __stdcall
+  #define HELPER_EXPORT(type) __declspec(dllexport) type __stdcall
+  #define HELPER_LOCAL(type) type
 #else
   #if __GNUC__ >= 4
-    #define HELPER_IMPORT extern __attribute__ ((visibility ("default")))
-    #define HELPER_EXPORT extern __attribute__ ((visibility ("default")))
-    #define HELPER_LOCAL  extern __attribute__ ((visibility ("hidden")))
+    #define HELPER_IMPORT(type) extern __attribute__ ((visibility ("default"))) type
+    #define HELPER_EXPORT(type) extern __attribute__ ((visibility ("default"))) type
+    #define HELPER_LOCAL(type)  extern __attribute__ ((visibility ("hidden"))) type
   #else
-    #define HELPER_IMPORT extern
-    #define HELPER_EXPORT extern
-    #define HELPER_LOCAL  extern
+    #define HELPER_IMPORT(type) extern type
+    #define HELPER_EXPORT(type) extern type
+    #define HELPER_LOCAL(type)  extern type
   #endif
 #endif
 
-#ifdef EXPORT_API // defined if FOR is compiled as a DLL
+#ifdef X_BUILD // defined if FOR is compiled as a DLL
   #define X_API HELPER_EXPORT
 #else
   #ifdef IMPORT_API
@@ -81,6 +81,7 @@ typedef u32_t                     ret_t;
 typedef uchar_t                   bool_t;
 typedef u64_t                     xtime_t ;
 
+typedef unsigned long             pint_t;
 
 #define X_FALSE                     0
 #define X_TRUE                      1

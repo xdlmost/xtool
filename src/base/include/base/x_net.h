@@ -35,9 +35,9 @@ typedef struct
  * 
  * @return X_API 
  */
-X_API i32_t x_net_init();
+X_API(i32_t) x_net_init();
 
-X_API i32_t x_get_local_net_interface_infos(x_net_interface_info_t **out_infos, u32_t *out_infos_count);
+X_API(i32_t) x_get_local_net_interface_infos(x_net_interface_info_t **out_infos, u32_t *out_infos_count);
 
 __X_END_DECLS
 #endif //__X_NET_H
